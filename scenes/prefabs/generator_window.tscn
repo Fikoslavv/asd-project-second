@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://dm1bu31ri25gk"]
+
+[node name="generator_window" type="Window"]
+auto_translate_mode = 1
+position = Vector2i(0, 36)
+size = Vector2i(640, 720)
+metadata/btn_generate_maze = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/btnGenerate")
+metadata/sbox_maze_width = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer/sbxWidth")
+metadata/sbox_maze_height = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer/sbxHeight")
+metadata/obtn_maze_algorithm = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/AlgorithmCenContainer/obtnAlgorithm")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="maze_generator" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="margins" type="MarginContainer" parent="MarginContainer/maze_generator"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer/maze_generator/margins"]
+layout_mode = 2
+ratio = 2.3333
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer"]
+layout_mode = 2
+
+[node name="Options" type="AspectRatioContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+ratio = 2.0
+
+[node name="optionsContainer" type="HFlowContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options"]
+layout_mode = 2
+
+[node name="WidthCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WidthContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="lblWidth" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+text = "Width"
+horizontal_alignment = 1
+
+[node name="sbxWidth" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+allow_greater = true
+alignment = 1
+select_all_on_focus = true
+
+[node name="HeightCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HeightContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="lblHeight" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+text = "Height"
+horizontal_alignment = 1
+
+[node name="sbxHeight" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+allow_greater = true
+alignment = 1
+select_all_on_focus = true
+
+[node name="AlgorithmCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
+layout_mode = 2
+
+[node name="obtnAlgorithm" type="OptionButton" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/AlgorithmCenContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "Prim's Algorithm (random)"
+popup/item_1/text = "Prim's Algorithm (last)"
+popup/item_1/id = 1
+
+[node name="btnGenerate" type="Button" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 50
+text = "Generate maze"

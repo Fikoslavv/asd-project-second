@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://d0yrhhs14jfmn"]
+
+[node name="maze_cell" type="Node2D"]
+metadata/wall_west = NodePath("WesternWall")
+metadata/wall_north = NodePath("NorthernWall")
+metadata/wall_east = NodePath("EasternWall")
+metadata/wall_south = NodePath("SouthernWall")
+metadata/cell_size = Vector2(50, 50)
+
+[node name="Floor" type="Polygon2D" parent="."]
+color = Color(0.338878, 0.338879, 0.338878, 1)
+polygon = PackedVector2Array(-25, -25, 25, -25, 25, 25, -25, 25)
+
+[node name="WesternWall" type="Polygon2D" parent="."]
+color = Color(0.192696, 0.192696, 0.192696, 1)
+polygon = PackedVector2Array(-25, -25, -20, -20, -20, 20, -25, 25)
+
+[node name="NorthernWall" type="Polygon2D" parent="."]
+color = Color(0.192696, 0.192696, 0.192696, 1)
+polygon = PackedVector2Array(-20, -20, -25, -25, 25, -25, 20, -20)
+
+[node name="EasternWall" type="Polygon2D" parent="."]
+color = Color(0.192696, 0.192696, 0.192696, 1)
+polygon = PackedVector2Array(25, 25, 20, 20, 20, -20, 25, -25)
+
+[node name="SouthernWall" type="Polygon2D" parent="."]
+color = Color(0.192696, 0.192696, 0.192696, 1)
+polygon = PackedVector2Array(-20, 20, -25, 25, 25, 25, 20, 20)
