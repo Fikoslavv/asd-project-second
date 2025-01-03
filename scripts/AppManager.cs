@@ -77,6 +77,7 @@ public partial class AppManager : Node
         }
         else if (algorithm.Contains("wilson's")) maze = Wilsons_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         else if (algorithm.Contains("hunt-and-kill")) maze = HuntAddKill_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("aldous-broder")) maze = Aldous_Broder_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
 
         foreach (var rep in this.mazeCellReps) rep.QueueFree();
         this.mazeCellReps.Clear();
