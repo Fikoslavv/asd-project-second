@@ -2,12 +2,16 @@
 
 [node name="generator_window" type="Window"]
 auto_translate_mode = 1
+title = "maze_generator_window"
 position = Vector2i(0, 36)
-size = Vector2i(640, 720)
+size = Vector2i(640, 290)
+min_size = Vector2i(640, 290)
 metadata/btn_generate_maze = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/btnGenerate")
-metadata/sbox_maze_width = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer/sbxWidth")
-metadata/sbox_maze_height = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer/sbxHeight")
-metadata/obtn_maze_algorithm = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/AlgorithmCenContainer/obtnAlgorithm")
+metadata/sbox_maze_width = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer/sbxWidth")
+metadata/sbox_maze_height = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer/sbxHeight")
+metadata/obtn_maze_algorithm = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/obtnAlgorithm")
+metadata/txt_maze_seed = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/SeedContainer/txtMazeSeed")
+metadata/cbtn_use_random_seed = NodePath("MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/SeedContainer/cbtnUseRandomSeed")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -36,73 +40,93 @@ ratio = 2.3333
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer"]
 layout_mode = 2
 
-[node name="Options" type="AspectRatioContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-ratio = 2.0
-
-[node name="optionsContainer" type="HFlowContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options"]
+[node name="optionsContainer" type="HFlowContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="WidthCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
+[node name="WidthCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WidthContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer"]
+[node name="WidthContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/WidthCenContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="lblWidth" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer"]
+[node name="lblWidth" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 40
 text = "Width"
 horizontal_alignment = 1
 
-[node name="sbxWidth" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/WidthCenContainer/WidthContainer"]
+[node name="sbxWidth" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+min_value = 2.0
+value = 10.0
 allow_greater = true
 alignment = 1
 select_all_on_focus = true
 
-[node name="HeightCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
+[node name="HeightCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HeightContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer"]
+[node name="HeightContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/HeightCenContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="lblHeight" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer"]
+[node name="lblHeight" type="Label" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 40
 text = "Height"
 horizontal_alignment = 1
 
-[node name="sbxHeight" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/HeightCenContainer/HeightContainer"]
+[node name="sbxHeight" type="SpinBox" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+min_value = 2.0
+value = 10.0
 allow_greater = true
 alignment = 1
 select_all_on_focus = true
 
-[node name="AlgorithmCenContainer" type="CenterContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer"]
-layout_mode = 2
-
-[node name="obtnAlgorithm" type="OptionButton" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/Options/optionsContainer/AlgorithmCenContainer"]
+[node name="obtnAlgorithm" type="OptionButton" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 alignment = 1
 selected = 0
-item_count = 2
-popup/item_0/text = "Prim's Algorithm (random)"
-popup/item_1/text = "Prim's Algorithm (last)"
+item_count = 4
+popup/item_0/text = "Growing Tree Alg. (Prim's Alg.)"
+popup/item_1/text = "Growing Tree Alg. (DFS)"
 popup/item_1/id = 1
+popup/item_2/text = "Wilson's Algorithm"
+popup/item_2/id = 2
+popup/item_3/text = "Hunt-and-Kill Algorithm"
+popup/item_3/id = 3
+
+[node name="SeedContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="cbtnUseRandomSeed" type="CheckButton" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/SeedContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+button_pressed = true
+text = "Random
+seed"
+alignment = 1
+
+[node name="txtMazeSeed" type="LineEdit" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer/SeedContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+placeholder_text = "Maze seed"
+alignment = 1
+editable = false
+virtual_keyboard_type = 2
+select_all_on_focus = true
 
 [node name="btnGenerate" type="Button" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_font_sizes/font_size = 50
 text = "Generate maze"

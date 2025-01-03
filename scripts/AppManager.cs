@@ -11,9 +11,12 @@ public partial class AppManager : Node
 
     [Export] private Node2D mazeRepRoot;
 
+    private Button btnGenerateMaze;
     private SpinBox sboxWidth;
     private SpinBox sboxHeight;
     private OptionButton obtnAlgorithm;
+    private LineEdit txtMazeSeed;
+    private CheckButton cbtnUseRandomSeed;
 
     private IList<Node2D> mazeCellReps = new List<Node2D>();
 
@@ -23,10 +26,18 @@ public partial class AppManager : Node
 
         this.generatorWindow.Show();
 
-        this.generatorWindow.GetNode<Button>(this.generatorWindow.GetMeta("btn_generate_maze").As<NodePath>()).Pressed += this.OnGenerateMazeBtn_Clicked;
+        this.btnGenerateMaze = this.generatorWindow.GetNode<Button>(this.generatorWindow.GetMeta("btn_generate_maze").As<NodePath>());
+        this.btnGenerateMaze.Pressed += this.OnGenerateMazeBtn_Clicked;
         this.sboxWidth = this.generatorWindow.GetNode<SpinBox>(this.generatorWindow.GetMeta("sbox_maze_width").As<NodePath>());
         this.sboxHeight = this.generatorWindow.GetNode<SpinBox>(this.generatorWindow.GetMeta("sbox_maze_height").As<NodePath>());
         this.obtnAlgorithm = this.generatorWindow.GetNode<OptionButton>(this.generatorWindow.GetMeta("obtn_maze_algorithm").As<NodePath>());
+        this.txtMazeSeed = this.generatorWindow.GetNode<LineEdit>(this.generatorWindow.GetMeta("txt_maze_seed").As<NodePath>());
+        this.cbtnUseRandomSeed = this.generatorWindow.GetNode<CheckButton>(this.generatorWindow.GetMeta("cbtn_use_random_seed").As<NodePath>());
+
+        this.cbtnUseRandomSeed.Toggled += (state) =>
+        {
+            this.txtMazeSeed.Editable = !state;
+        };
 
         if (this.mazeRepRoot == null)
         {
@@ -38,14 +49,34 @@ public partial class AppManager : Node
 
     private void OnGenerateMazeBtn_Clicked()
     {
+        this.btnGenerateMaze.Disabled = true;
+        Random random;
+        if (this.cbtnUseRandomSeed.ButtonPressed)
+        {
+            int seed = Random.Shared.Next();
+            random = new(seed);
+            this.txtMazeSeed.Text = seed.ToString();
+        }
+        else
+        {
+            if (!int.TryParse(this.txtMazeSeed.Text, out int seed))
+            {
+                this.btnGenerateMaze.Disabled = false;
+                return;
+            }
+            else random = new(seed);
+        }
+
         MazeCell[][] maze = null;
         string algorithm = this.obtnAlgorithm.Text.ToString().ToLower();
 
-        if (algorithm.Contains("prim's"))
+        if (algorithm.Contains("growing tree"))
         {
-            if (algorithm.Contains("last")) maze = Prims_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.Last());
-            else if (algorithm.Contains("random")) maze = Prims_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier[(int)Math.Clamp(random.NextDouble() * 1.2 * frontier.Count, 0, frontier.Count - 1)]);
+            if (algorithm.Contains("dfs")) maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.Last(), random);
+            else if (algorithm.Contains("prim's")) maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier[(int)Math.Clamp(random.NextDouble() * 1.5 * frontier.Count, 0, frontier.Count - 1)], random);
         }
+        else if (algorithm.Contains("wilson's")) maze = Wilsons_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("hunt-and-kill")) maze = HuntAddKill_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
 
         foreach (var rep in this.mazeCellReps) rep.QueueFree();
         this.mazeCellReps.Clear();
@@ -74,5 +105,7 @@ public partial class AppManager : Node
                 this.mazeRepRoot.CallDeferred(Node.MethodName.AddChild, mazeCellRep);
             }
         }
+
+        this.btnGenerateMaze.Disabled = false;
     }
 }
