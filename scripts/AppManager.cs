@@ -73,12 +73,14 @@ public partial class AppManager : Node
         if (algorithm.Contains("growing tree"))
         {
             if (algorithm.Contains("dfs")) maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.Last(), random);
-            else if (algorithm.Contains("prim's")) maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier[(int)Math.Clamp(random.NextDouble() * 1.5 * frontier.Count, 0, frontier.Count - 1)], random);
+            else if (algorithm.Contains("prim's")) maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.AsQueryable().ElementAt(random.Next(0, frontier.Count)), random);
         }
         else if (algorithm.Contains("wilson's")) maze = Wilsons_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         else if (algorithm.Contains("hunt-and-kill")) maze = HuntAddKill_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         else if (algorithm.Contains("aldous-broder")) maze = Aldous_Broder_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         else if (algorithm.Contains("prim's")) maze = Prims_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("kruskal's")) maze = Kruskals_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("depth-first search")) maze = Depth_First_Search_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
 
         foreach (var rep in this.mazeCellReps) rep.QueueFree();
         this.mazeCellReps.Clear();

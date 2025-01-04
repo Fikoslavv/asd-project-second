@@ -33,12 +33,12 @@ public static partial class Lib_Algorithm
             return false;
         }
 
-        public override int GetHashCode() => base.GetHashCode();
+        public override int GetHashCode() => System.HashCode.Combine(x, y);
 
-        public override string ToString()
-        {
-            return $"{nameof(MazeCellCoords)} => ({x}, {y})";
-        }
+        public override string ToString() => $"{nameof(MazeCellCoords)} => ({x}, {y})";
+
+        public static bool operator ==(MazeCellCoords left, MazeCellCoords right) => left.Equals(right);
+        public static bool operator !=(MazeCellCoords left, MazeCellCoords right) => !left.Equals(right);
     }
 
     internal class MazeCellRep
@@ -136,5 +136,18 @@ public static partial class Lib_Algorithm
         }
 
         return new(-1, -1);
+    }
+
+    internal static MazeCellRep[][] GetMazeCellRepsWithAllWalls(int width, int height, MazeCell value = MazeCell.WesternWall | MazeCell.NorthernWall | MazeCell.EasternWall | MazeCell.SouthernWall)
+    {
+        MazeCellRep[][] maze = new MazeCellRep[height][];
+
+        for (int y = 0; y < height; y++)
+        {
+            maze[y] = new MazeCellRep[width];
+            for (int x = 0; x < width; x++) maze[y][x] = new() { value = value };
+        }
+
+        return maze;
     }
 }

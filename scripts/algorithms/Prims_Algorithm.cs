@@ -29,12 +29,7 @@ public static partial class Prims_Algorithm
 
     internal static MazeCell[][] GenerateMaze(int width, int height, Random random = default)
     {
-        MazeCellRep[][] maze = new MazeCellRep[height][];
-        for (int y = 0; y < height; y++)
-        {
-            maze[y] = new MazeCellRep[width];
-            for (int x = 0; x < width; x++) maze[y][x] = new() { value = MazeCell.WesternWall | MazeCell.NorthernWall | MazeCell.EasternWall | MazeCell.SouthernWall };
-        }
+        MazeCellRep[][] maze = GetMazeCellRepsWithAllWalls(width, height);
 
         MazeCellRep selRep;
         MazeCellCoords selCell = new(random.Next(0, width), random.Next(0, height));
