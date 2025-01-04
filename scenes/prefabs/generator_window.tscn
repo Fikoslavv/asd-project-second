@@ -96,7 +96,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 alignment = 1
 selected = 0
-item_count = 5
+item_count = 6
 popup/item_0/text = "Growing Tree Alg. (Prim's Alg.)"
 popup/item_1/text = "Growing Tree Alg. (DFS)"
 popup/item_1/id = 1
@@ -106,6 +106,8 @@ popup/item_3/text = "Hunt-and-Kill Algorithm"
 popup/item_3/id = 3
 popup/item_4/text = "Aldous-Broder Algorithm"
 popup/item_4/id = 4
+popup/item_5/text = "Prim's Algorithm"
+popup/item_5/id = 5
 
 [node name="SeedContainer" type="HBoxContainer" parent="MarginContainer/maze_generator/margins/AspectRatioContainer/VBoxContainer"]
 layout_mode = 2
