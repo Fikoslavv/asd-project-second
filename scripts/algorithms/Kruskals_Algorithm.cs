@@ -19,7 +19,7 @@ public static partial class Kruskals_Algorithm
             for (int x = 0; x < width; x++) trees.Add(new HashSet<MazeCellCoords> { new(x, y) });
         }
 
-        IList<KeyValuePair<MazeCellCoords, MazeCellCoords>> edges = new List<KeyValuePair<MazeCellCoords, MazeCellCoords>>();
+        IList<KeyValuePair<MazeCellCoords, MazeCellCoords>> edges = new List<KeyValuePair<MazeCellCoords, MazeCellCoords>>(4 * width * height - 2 * (width + height));
 
         for (int y = 0; y < height; y++)
         {
