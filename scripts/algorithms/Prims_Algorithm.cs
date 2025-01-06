@@ -20,9 +20,9 @@ public static partial class Prims_Algorithm
         public int Compare(MazeCellCoords x, MazeCellCoords y)
         {
             FetchNeighbors(neighbors, x, maze[0].Length, maze.Length);
-            int lCount = neighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited).Count();
+            int lCount = neighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited).Count();
             FetchNeighbors(neighbors, y, maze[0].Length, maze.Length);
-            int rCount = neighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited).Count();
+            int rCount = neighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited).Count();
             return rCount.CompareTo(lCount);
         }
     }
@@ -44,7 +44,7 @@ public static partial class Prims_Algorithm
         {
             FetchNeighbors(neighbors, selCell, width, height);
 
-            var querry = neighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
+            var querry = neighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
 
             if (querry.Any())
             {
@@ -60,6 +60,6 @@ public static partial class Prims_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsQueryable().Select(row => row.AsQueryable().Select(cell => cell.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

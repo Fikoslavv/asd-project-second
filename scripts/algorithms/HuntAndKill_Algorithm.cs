@@ -15,11 +15,11 @@ public static partial class HuntAddKill_Algorithm
         MazeCellCoords[] neighbors = new MazeCellCoords[4];
 
         maze[selCell.y][selCell.x].visited = true;
-        while (maze.AsParallel().Select(row => row.AsQueryable().Where(c => !c.visited).Any()).Where(r => r).Any())
+        while (maze.AsParallel().Select(row => row.AsEnumerable().Where(c => !c.visited).Any()).AsEnumerable().Where(r => r).Any())
         {
             FetchNeighbors(neighbors, selCell, width, height);
 
-            var querry = neighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
+            var querry = neighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
             if (!querry.Any())
             {
                 querry = null;
@@ -34,7 +34,7 @@ public static partial class HuntAddKill_Algorithm
                             selCell = new(x, y);
                             FetchNeighbors(tempNeighbors, selCell, width, height);
 
-                            var tempQuerry = tempNeighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
+                            var tempQuerry = tempNeighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
                             if (tempQuerry.Any())
                             {
                                 querry = tempQuerry;
@@ -59,6 +59,6 @@ public static partial class HuntAddKill_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsQueryable().Select(row => row.AsQueryable().Select(cell => cell.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

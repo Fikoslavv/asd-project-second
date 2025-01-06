@@ -22,7 +22,7 @@ public static partial class Depth_First_Search_Algorithm
             maze[selCell.y][selCell.x].visited = true;
 
             FetchNeighbors(neighbors, selCell, width, height);
-            var querry = neighbors.AsQueryable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
+            var querry = neighbors.AsEnumerable().Where(c => c.isValid() && !maze[c.y][c.x].visited);
 
             if (querry.Any())
             {
@@ -38,6 +38,6 @@ public static partial class Depth_First_Search_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.Select(r => r.Select(c => c.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

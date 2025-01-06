@@ -15,11 +15,11 @@ public static partial class Aldous_Broder_Algorithm
         MazeCellCoords[] neighbors = new MazeCellCoords[4];
 
         maze[selCell.y][selCell.x].visited = true;
-        while (maze.AsParallel().Select(row => row.AsQueryable().Where(c => !c.visited).Any()).Where(r => r).Any())
+        while (maze.AsParallel().Select(r => r.AsEnumerable().Where(c => !c.visited).Any()).AsEnumerable().Where(r => r).Any())
         {
             FetchNeighbors(neighbors, selCell, width, height);
 
-            var querry = neighbors.AsQueryable().Where(c => c.isValid());
+            var querry = neighbors.AsEnumerable().Where(c => c.isValid());
             var neighbor = querry.ElementAt(random.Next(0, querry.Count()));
             if (!maze[neighbor.y][neighbor.x].visited) MergeCells(maze, selCell, neighbor);
 
@@ -30,6 +30,6 @@ public static partial class Aldous_Broder_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsQueryable().Select(row => row.AsQueryable().Select(cell => cell.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

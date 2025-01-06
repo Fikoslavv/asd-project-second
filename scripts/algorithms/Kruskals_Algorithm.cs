@@ -41,8 +41,8 @@ public static partial class Kruskals_Algorithm
                 edges.RemoveAt(index);
             }
 
-            var selTree = trees.AsQueryable().Where(t => t.Contains(selEdge.Key)).First();
-            var neighborTree = trees.AsQueryable().Where(t => t.Contains(selEdge.Value)).First();
+            var selTree = trees.AsEnumerable().Where(t => t.Contains(selEdge.Key)).First();
+            var neighborTree = trees.AsEnumerable().Where(t => t.Contains(selEdge.Value)).First();
 
             if (selTree != neighborTree)
             {
@@ -55,6 +55,6 @@ public static partial class Kruskals_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsParallel().Select(r => r.Select(c => c.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

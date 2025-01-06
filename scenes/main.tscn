@@ -1,30 +1,32 @@
 [gd_scene load_steps=5 format=3 uid="uid://bhfjc3tjt82ka"]
 
-[ext_resource type="PackedScene" uid="uid://dm1bu31ri25gk" path="res://scenes/prefabs/generator_window.tscn" id="1_l3mfy"]
+[ext_resource type="PackedScene" uid="uid://dm1bu31ri25gk" path="res://scenes/prefabs/controls_window.tscn" id="1_l3mfy"]
 [ext_resource type="Script" path="res://scripts/AppManager.cs" id="1_u3ily"]
 [ext_resource type="PackedScene" uid="uid://d0yrhhs14jfmn" path="res://scenes/prefabs/maze_cell.tscn" id="2_t6ifs"]
 [ext_resource type="Script" path="res://scripts/PlayerMovement.cs" id="3_vss8p"]
 
 [node name="root" type="Node2D"]
 
-[node name="app_manager" type="Node2D" parent="." node_paths=PackedStringArray("generatorWindow")]
+[node name="app_manager" type="Node2D" parent="." node_paths=PackedStringArray("generatorWindow", "mazeRepRoot")]
 script = ExtResource("1_u3ily")
-generatorWindow = NodePath("../generator_window")
+generatorWindow = NodePath("../controls_window")
 mazeCellRep = ExtResource("2_t6ifs")
+mazeRepRoot = NodePath("../MazeRoot")
 
 [node name="player_controls" type="Node2D" parent="." node_paths=PackedStringArray("playerRoot", "camera")]
 script = ExtResource("3_vss8p")
 movementSpeed = 750.0
 zoomSpeed = 1.6
 zoomMin = 1.0
-zoomMax = 0.3
+zoomMax = 0.01
 playerRoot = NodePath("../player")
 camera = NodePath("../player/camera_2D")
 
-[node name="generator_window" parent="." instance=ExtResource("1_l3mfy")]
-position = Vector2i(12, 36)
+[node name="controls_window" parent="." instance=ExtResource("1_l3mfy")]
 visible = false
 
 [node name="player" type="Node2D" parent="."]
 
 [node name="camera_2D" type="Camera2D" parent="player"]
+
+[node name="MazeRoot" type="Node2D" parent="."]

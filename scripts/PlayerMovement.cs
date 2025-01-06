@@ -11,10 +11,10 @@ public partial class PlayerMovement : Node
 	[Export(PropertyHint.Range, "0,1000,0.2,or_greater")]
 	private double zoomSpeed;
 
-	[Export(PropertyHint.Range, "0,100,0.1, or_greater, or_lower")]
+	[Export(PropertyHint.Range, "0,100,0.01, or_greater, or_lower")]
 	private float zoomMin;
 
-	[Export(PropertyHint.Range, "0,100,0.1, or_greater, or_lower")]
+	[Export(PropertyHint.Range, "0,100,0.01, or_greater, or_lower")]
 	private float zoomMax;
 
 	[Export(PropertyHint.NodeType)]

@@ -29,7 +29,8 @@ public static partial class Lib_Algorithm
 
         public override bool Equals(object obj)
         {
-            if (obj is MazeCellCoords coords) return x == coords.x && y == coords.y;
+            if (obj is null) return false;
+            else if (obj is MazeCellCoords coords) return x == coords.x && y == coords.y;
             return false;
         }
 
@@ -37,8 +38,8 @@ public static partial class Lib_Algorithm
 
         public override string ToString() => $"{nameof(MazeCellCoords)} => ({x}, {y})";
 
-        public static bool operator ==(MazeCellCoords left, MazeCellCoords right) => left.Equals(right);
-        public static bool operator !=(MazeCellCoords left, MazeCellCoords right) => !left.Equals(right);
+        public static bool operator ==(MazeCellCoords left, MazeCellCoords right) => left is not null && left.Equals(right);
+        public static bool operator !=(MazeCellCoords left, MazeCellCoords right) => left is null || !left.Equals(right);
     }
 
     internal class MazeCellRep
@@ -138,6 +139,22 @@ public static partial class Lib_Algorithm
         return new(-1, -1);
     }
 
+    internal static bool AreCellsConnected(MazeCellRep[][] maze, MazeCellCoords from, MazeCellCoords to)
+    {
+        if (!from.isValid() || !to.isValid()) return false;
+        else if (from == to) return true;
+        else if (from.x == to.x)
+        {
+            if (from.y < to.y) return (maze[from.y][from.x].value & MazeCell.NorthernWall) == 0 && (maze[to.y][to.x].value & MazeCell.SouthernWall) == 0;
+            else return (maze[from.y][from.x].value & MazeCell.SouthernWall) == 0 && (maze[to.y][to.x].value & MazeCell.NorthernWall) == 0;
+        }
+        else
+        {
+            if (from.x < to.x) return (maze[from.y][from.x].value & MazeCell.EasternWall) == 0 && (maze[to.y][to.x].value & MazeCell.WesternWall) == 0;
+            else return (maze[from.y][from.x].value & MazeCell.WesternWall) == 0 && (maze[to.y][to.x].value & MazeCell.EasternWall) == 0;
+        }
+    }
+
     internal static MazeCellRep[][] GetMazeCellRepsWithAllWalls(int width, int height, MazeCell value = MazeCell.WesternWall | MazeCell.NorthernWall | MazeCell.EasternWall | MazeCell.SouthernWall)
     {
         MazeCellRep[][] maze = new MazeCellRep[height][];
@@ -149,5 +166,32 @@ public static partial class Lib_Algorithm
         }
 
         return maze;
+    }
+
+    internal static MazeCellRep[][] ConvertToMazeCellReps(MazeCell[][] maze)
+    {
+        MazeCellRep[][] output = new MazeCellRep[maze.Length][];
+
+        for (int y = 0; y < output.Length; y++)
+        {
+            output[y] = new MazeCellRep[maze[y].Length];
+            for (int x = 0; x < output[y].Length; x++) output[y][x] = new() { value = maze[y][x] };
+        }
+
+        return output;
+    }
+
+    internal static int GetCellsWallsCount(MazeCell cell)
+    {
+        int count = 0;
+        var value = (int)cell;
+
+        while (value > 0)
+        {
+            value >>= 1;
+            count += value & 1;
+        }
+
+        return count;
     }
 }

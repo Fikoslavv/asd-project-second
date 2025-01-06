@@ -6,6 +6,9 @@ metadata/wall_north = NodePath("NorthernWall")
 metadata/wall_east = NodePath("EasternWall")
 metadata/wall_south = NodePath("SouthernWall")
 metadata/cell_size = Vector2(50, 50)
+metadata/floor = NodePath("Floor")
+metadata/color_floor_default = Color(0.337255, 0.337255, 0.337255, 1)
+metadata/color_floor_path = Color(0.106363, 0.283609, 0.744822, 1)
 
 [node name="Floor" type="Polygon2D" parent="."]
 color = Color(0.338878, 0.338879, 0.338878, 1)

@@ -1,0 +1,196 @@
+[gd_scene format=3 uid="uid://dm1bu31ri25gk"]
+
+[node name="controls_window" type="Window"]
+auto_translate_mode = 1
+title = "controls_window"
+position = Vector2i(12, 36)
+size = Vector2i(640, 331)
+min_size = Vector2i(640, 331)
+metadata/btn_generate_maze = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/btnGenerate")
+metadata/sbox_maze_width = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer/sbxWidth")
+metadata/sbox_maze_height = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer/sbxHeight")
+metadata/obtn_maze_algorithm = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/obtnAlgorithm")
+metadata/txt_maze_seed = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/SeedContainer/txtMazeSeed")
+metadata/cbtn_use_random_seed = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/SeedContainer/cbtnUseRandomSeed")
+metadata/btn_find_path = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/btnFindPath")
+metadata/btn_clear_path = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/btnClearPath")
+metadata/obtn_path_algorithm = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/obtnAlgorithm")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="TabContainer" type="TabContainer" parent="MarginContainer"]
+layout_mode = 2
+current_tab = 0
+tab_focus_mode = 0
+
+[node name="maze_generator" type="VBoxContainer" parent="MarginContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="margins" type="MarginContainer" parent="MarginContainer/TabContainer/maze_generator"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer/TabContainer/maze_generator/margins"]
+layout_mode = 2
+ratio = 2.3333
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="optionsContainer" type="HFlowContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="WidthCenContainer" type="CenterContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WidthContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/WidthCenContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="lblWidth" type="Label" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+text = "Width"
+horizontal_alignment = 1
+
+[node name="sbxWidth" type="SpinBox" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 2.0
+value = 10.0
+allow_greater = true
+alignment = 1
+select_all_on_focus = true
+
+[node name="HeightCenContainer" type="CenterContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HeightContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/HeightCenContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="lblHeight" type="Label" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+text = "Height"
+horizontal_alignment = 1
+
+[node name="sbxHeight" type="SpinBox" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 2.0
+value = 10.0
+allow_greater = true
+alignment = 1
+select_all_on_focus = true
+
+[node name="obtnAlgorithm" type="OptionButton" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+alignment = 1
+selected = 0
+item_count = 9
+popup/item_0/text = "Growing Tree Alg. (Prim's Alg.)"
+popup/item_1/text = "Growing Tree Alg. (DFS)"
+popup/item_1/id = 1
+popup/item_2/text = "Wilson's Algorithm"
+popup/item_2/id = 2
+popup/item_3/text = "Hunt-and-Kill Algorithm"
+popup/item_3/id = 3
+popup/item_4/text = "Aldous-Broder Algorithm"
+popup/item_4/id = 4
+popup/item_5/text = "Prim's Algorithm"
+popup/item_5/id = 5
+popup/item_6/text = "Kruskal's Algorithm"
+popup/item_6/id = 6
+popup/item_7/text = "Kruskal's Algorithm (Looping)"
+popup/item_7/id = 7
+popup/item_8/text = "Depth-First Search Algorithm"
+popup/item_8/id = 8
+
+[node name="SeedContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="cbtnUseRandomSeed" type="CheckButton" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/SeedContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+button_pressed = true
+text = "Random
+seed"
+alignment = 1
+
+[node name="txtMazeSeed" type="LineEdit" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/SeedContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+placeholder_text = "Maze seed"
+alignment = 1
+editable = false
+virtual_keyboard_type = 2
+select_all_on_focus = true
+
+[node name="btnGenerate" type="Button" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Generate maze"
+
+[node name="path_finding" type="VBoxContainer" parent="MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="margins" type="MarginContainer" parent="MarginContainer/TabContainer/path_finding"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer/TabContainer/path_finding/margins"]
+layout_mode = 2
+ratio = 2.3333
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer"]
+layout_mode = 2
+
+[node name="obtnAlgorithm" type="OptionButton" parent="MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+alignment = 1
+selected = 0
+item_count = 1
+popup/item_0/text = "Dijkstra's Algorithm"
+
+[node name="btnFindPath" type="Button" parent="MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Find path"
+
+[node name="btnClearPath" type="Button" parent="MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Clear path"

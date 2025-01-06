@@ -25,13 +25,13 @@ public static partial class Wilsons_Algorithm
         MazeCellCoords neighbor;
         var neighbors = new MazeCellCoords[4];
         ICollection<MazeCellCoords> blacklistedCells = new LinkedList<MazeCellCoords>();
-        while (maze.AsParallel().Select(row => row.AsParallel().Where(cell => !cell.visited).Any()).Where(row => row).Any())
+        while (maze.AsParallel().Select(r => r.AsEnumerable().Where(c => !c.visited).Any()).AsEnumerable().Where(row => row).Any())
         {
             selCell = path.Last();
             FetchNeighbors(neighbors, selCell, width, height);
 
             {
-                var querry = neighbors.AsQueryable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
+                var querry = neighbors.AsEnumerable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
 
                 if (querry.Any()) neighbor = querry.ElementAt(random.Next(0, querry.Count()));
                 else
@@ -44,7 +44,7 @@ public static partial class Wilsons_Algorithm
                         selCell = path.Last();
                         FetchNeighbors(neighbors, selCell, width, height);
                         UnmergeCells(maze, selCell, blacklistedCell);
-                        querry = neighbors.AsQueryable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
+                        querry = neighbors.AsEnumerable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
                     }
                     while (!querry.Any() && path.Count > 0);
 
@@ -56,7 +56,7 @@ public static partial class Wilsons_Algorithm
                         blacklistedCells.Clear();
                         path.Add(selCell);
                         FetchNeighbors(neighbors, selCell, width, height);
-                        querry = neighbors.AsQueryable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
+                        querry = neighbors.AsEnumerable().Where(n => n.isValid() && !path.Contains(n) && !blacklistedCells.Contains(n));
                     }
 
                     neighbor = querry.ElementAt(random.Next(0, querry.Count()));
@@ -79,6 +79,6 @@ public static partial class Wilsons_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsQueryable().Select(row => row.Select(cell => cell.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }

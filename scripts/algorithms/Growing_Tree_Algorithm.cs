@@ -30,7 +30,7 @@ public static partial class Growing_Tree_Algorithm
 
             FetchNeighbors(neighbors, selCell, width, height);
 
-            var querry = neighbors.AsQueryable().Where(n => n.isValid() && !maze[n.y][n.x].visited);
+            var querry = neighbors.AsEnumerable().Where(n => n.isValid() && !maze[n.y][n.x].visited);
 
             if (querry.Any())
             {
@@ -48,6 +48,6 @@ public static partial class Growing_Tree_Algorithm
         maze[0][random.Next(0, width)].value &= ~MazeCell.SouthernWall;
         maze[height - 1][random.Next(0, width)].value &= ~MazeCell.NorthernWall;
 
-        return maze.AsQueryable().Select(row => row.AsQueryable().Select(cell => cell.value).ToArray()).ToArray();
+        return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
 }
