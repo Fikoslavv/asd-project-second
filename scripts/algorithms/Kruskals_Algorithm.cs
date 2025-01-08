@@ -57,4 +57,66 @@ public static partial class Kruskals_Algorithm
 
         return maze.AsParallel().Select(r => r.AsEnumerable().Select(c => c.value).ToArray()).ToArray();
     }
+
+    internal static IEnumerator<MazeAnimatedGenData> GetMazeGenerator(int width, int height, Random random = default)
+    {
+        MazeCellCoords[] neighbors = new MazeCellCoords[4];
+        MazeCellCoords selCell = null;
+        MazeCellRep[][] maze = GetMazeCellRepsWithAllWalls(width, height);
+        MazeAnimatedGenData output = new() { maze = maze, wasSelCellAdded = true, wasNeighborCellAdded = true };
+
+        IList<HashSet<MazeCellCoords>> trees = new List<HashSet<MazeCellCoords>>(width * height);
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++) trees.Add(new HashSet<MazeCellCoords> { new(x, y) });
+        }
+
+        IList<KeyValuePair<MazeCellCoords, MazeCellCoords>> edges = new List<KeyValuePair<MazeCellCoords, MazeCellCoords>>(4 * width * height - 2 * (width + height));
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                selCell = new(x, y);
+                FetchNeighbors(neighbors, selCell, width, height);
+                foreach (var neighbor in neighbors) if (neighbor.isValid()) edges.Add(new(selCell, neighbor));
+            }
+        }
+
+        KeyValuePair<MazeCellCoords, MazeCellCoords> selEdge;
+
+        yield return output;
+
+        while (edges.Any())
+        {
+            {
+                int index = random.Next(0, edges.Count);
+                selEdge = edges[index];
+                edges.RemoveAt(index);
+            }
+
+            var selTree = trees.AsEnumerable().Where(t => t.Contains(selEdge.Key)).First();
+            var neighborTree = trees.AsEnumerable().Where(t => t.Contains(selEdge.Value)).First();
+
+            if (selTree != neighborTree)
+            {
+                MergeCells(maze, selEdge.Key, selEdge.Value);
+                selTree.UnionWith(neighborTree);
+                trees.Remove(neighborTree);
+
+                output.lastSelCellCoords = selEdge.Key;
+                output.lastNeighborCoords = selEdge.Value;
+                yield return output;
+            }
+        }
+
+        selCell = new(random.Next(0, width), 0);
+        maze[selCell.y][selCell.x].value &= ~MazeCell.SouthernWall;
+        output.lastSelCellCoords = selCell;
+
+        selCell = new(random.Next(0, width), height - 1);
+        maze[selCell.y][selCell.x].value &= ~MazeCell.NorthernWall;
+        output.lastNeighborCoords = selCell;
+        yield return output;
+    }
 }

@@ -4,8 +4,8 @@
 auto_translate_mode = 1
 title = "controls_window"
 position = Vector2i(12, 36)
-size = Vector2i(640, 331)
-min_size = Vector2i(640, 331)
+size = Vector2i(640, 400)
+min_size = Vector2i(640, 400)
 metadata/btn_generate_maze = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/btnGenerate")
 metadata/sbox_maze_width = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/WidthCenContainer/WidthContainer/sbxWidth")
 metadata/sbox_maze_height = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/optionsContainer/HeightCenContainer/HeightContainer/sbxHeight")
@@ -15,6 +15,8 @@ metadata/cbtn_use_random_seed = NodePath("MarginContainer/TabContainer/maze_gene
 metadata/btn_find_path = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/btnFindPath")
 metadata/btn_clear_path = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/btnClearPath")
 metadata/obtn_path_algorithm = NodePath("MarginContainer/TabContainer/path_finding/margins/AspectRatioContainer/VBoxContainer/obtnAlgorithm")
+metadata/cbtn_enable_animated_maze_build = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/AnimationContainer/cbtnEnableAnimatedMazeBuild")
+metadata/txt_build_animation_speed = NodePath("MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/AnimationContainer/txtBuildAnimationSpeed")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -147,6 +149,26 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 40
 placeholder_text = "Maze seed"
+alignment = 1
+editable = false
+virtual_keyboard_type = 2
+select_all_on_focus = true
+
+[node name="AnimationContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="cbtnEnableAnimatedMazeBuild" type="CheckButton" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/AnimationContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+button_pressed = true
+text = "Instant maze build"
+alignment = 1
+
+[node name="txtBuildAnimationSpeed" type="LineEdit" parent="MarginContainer/TabContainer/maze_generator/margins/AspectRatioContainer/CenterContainer/VBoxContainer/AnimationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+placeholder_text = "Build anim. speed"
 alignment = 1
 editable = false
 virtual_keyboard_type = 2

@@ -4,6 +4,8 @@ public static partial class Lib_Algorithm
 {
     internal class MazeCellCoords
     {
+        internal static readonly MazeCellCoords DEFAULT = new(0, 0);
+        
         internal int x;
         internal int y;
 
@@ -47,6 +49,15 @@ public static partial class Lib_Algorithm
         public MazeCell value;
 
         public bool visited = false;
+    }
+
+    internal struct MazeAnimatedGenData
+    {
+        internal MazeCellRep[][] maze;
+        internal MazeCellCoords lastSelCellCoords;
+        internal bool wasSelCellAdded;
+        internal MazeCellCoords lastNeighborCoords;
+        internal bool wasNeighborCellAdded;
     }
 
     internal static void FetchNeighbors(MazeCellCoords[] neighbors, MazeCellCoords selCell, int width, int height)
@@ -126,11 +137,11 @@ public static partial class Lib_Algorithm
         }
     }
 
-    internal static MazeCellCoords GetFirstUnvisitedCell(MazeCellRep[][] maze)
+    internal static MazeCellCoords GetFirstUnvisitedCell(MazeCellRep[][] maze, int cachedX = 0, int cachedY = 0)
     {
-        for (int y = 0; y < maze.Length; y++)
+        for (int y = cachedY; y < maze.Length; y++)
         {
-            for (int x = 0; x < maze[y].Length; x++)
+            for (int x = cachedX; x < maze[y].Length; x++)
             {
                 if (!maze[y][x].visited) return new(x, y);
             }

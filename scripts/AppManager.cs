@@ -20,8 +20,8 @@ public partial class AppManager : Node
     private Button btnFindPath;
     private Button btnClearPath;
     private OptionButton obtnPathAlgorithm;
-
-    private IList<Node2D> mazeCellReps = new List<Node2D>();
+    private CheckButton cbtnEnableAnimatedMazeBuild;
+    private LineEdit txtBuildAnimationSpeed;
 
     private MazeCell[][] maze;
     private Lib_Algorithm.MazeCellCoords[] path;
@@ -44,11 +44,15 @@ public partial class AppManager : Node
         this.btnClearPath = this.generatorWindow.GetNode<Button>(this.generatorWindow.GetMeta("btn_clear_path").As<NodePath>());
         this.btnClearPath.Pressed += this.OnClearPathBtn_Clicked;
         this.obtnPathAlgorithm = this.generatorWindow.GetNode<OptionButton>(this.generatorWindow.GetMeta("obtn_path_algorithm").As<NodePath>());
+        this.cbtnEnableAnimatedMazeBuild = this.generatorWindow.GetNode<CheckButton>(this.generatorWindow.GetMeta("cbtn_enable_animated_maze_build").As<NodePath>());
+        this.txtBuildAnimationSpeed = this.generatorWindow.GetNode<LineEdit>(this.generatorWindow.GetMeta("txt_build_animation_speed").As<NodePath>());
 
         this.cbtnUseRandomSeed.Toggled += (state) =>
         {
             this.txtMazeSeed.Editable = !state;
         };
+
+        this.cbtnEnableAnimatedMazeBuild.Toggled += (state) => this.txtBuildAnimationSpeed.Editable = !state;
 
         if (this.mazeRepRoot == null)
         {
@@ -61,6 +65,7 @@ public partial class AppManager : Node
     private void OnGenerateMazeBtn_Clicked()
     {
         this.path = null;
+        this.maze = null;
 
         this.btnGenerateMaze.Disabled = true;
         Random random;
@@ -80,53 +85,52 @@ public partial class AppManager : Node
             else random = new(seed);
         }
 
+        double? animationSpeed = null;
+        if (!this.cbtnEnableAnimatedMazeBuild.ButtonPressed)
+        {
+            if (!int.TryParse(this.txtBuildAnimationSpeed.Text, out var animSpeed))
+            {
+                this.btnGenerateMaze.Disabled = false;
+                return;
+            }
+
+            animationSpeed = animSpeed * 0.001;
+        }
+
+        IEnumerator<Lib_Algorithm.MazeAnimatedGenData> generator = null;
         string algorithm = this.obtnMazeAlgorithm.Text.ToString().ToLower();
 
         if (algorithm.Contains("growing tree"))
         {
-            if (algorithm.Contains("dfs")) this.maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.Last(), random);
-            else if (algorithm.Contains("prim's")) this.maze = Growing_Tree_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.AsQueryable().ElementAt(random.Next(0, frontier.Count)), random);
+            if (algorithm.Contains("dfs")) generator = Growing_Tree_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.Last(), random);
+            else if (algorithm.Contains("prim's")) generator = Growing_Tree_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, (frontier, random) => frontier.AsQueryable().ElementAt(random.Next(0, frontier.Count)), random);
         }
-        else if (algorithm.Contains("wilson's")) this.maze = Wilsons_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
-        else if (algorithm.Contains("hunt-and-kill")) this.maze = HuntAddKill_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
-        else if (algorithm.Contains("aldous-broder")) this.maze = Aldous_Broder_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
-        else if (algorithm.Contains("prim's")) this.maze = Prims_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("wilson's")) generator = Wilsons_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("hunt-and-kill")) generator = HuntAddKill_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("aldous-broder")) generator = Aldous_Broder_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("prim's")) generator = Prims_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         else if (algorithm.Contains("kruskal's"))
         {
-            if (algorithm.Contains("looping")) this.maze = Kruskals_Algorithm.GenerateMazeLooping((int)sboxWidth.Value, (int)sboxHeight.Value, random);
-            else this.maze = Kruskals_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+            if (algorithm.Contains("looping")) generator = Kruskals_Algorithm.GetMazeLoopingGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+            else generator = Kruskals_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
         }
-        else if (algorithm.Contains("depth-first search")) this.maze = Depth_First_Search_Algorithm.GenerateMaze((int)sboxWidth.Value, (int)sboxHeight.Value, random);
+        else if (algorithm.Contains("depth-first search")) generator = Depth_First_Search_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
 
-        foreach (var rep in this.mazeCellReps) rep.QueueFree();
-        this.mazeCellReps.Clear();
+        foreach (var rep in this.mazeRepRoot.GetChildren()) rep.Free();
 
-        for (int y = this.maze.Length - 1; y >= 0; y--)
+        var tempCell = this.mazeCellRep.Instantiate();
+        var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
+        tempCell.Free();
+
+        var builder = new MazeBuilder() { MazeParent = this.mazeRepRoot, MazeGen = generator, MazeCellPrefab = this.mazeCellRep, MazeCellSize = cellSize, TimeThreshold = animationSpeed };
+        var parent = this.GetParent();
+        parent.CallDeferred(Node.MethodName.AddChild, builder);
+
+        builder.OnBuildCompleted += (maze) =>
         {
-            for (int x = this.maze[y].Length - 1; x >= 0; x--)
-            {
-                var mazeCellRep = this.mazeCellRep.Instantiate<Node2D>();
-                var cellSize = mazeCellRep.GetMeta("cell_size").As<Vector2>();
-                mazeCellRep.GlobalPosition = new Vector2((this.maze[y].Length * cellSize.X / -2) + (x * cellSize.X), (cellSize.Y * this.maze.Length / 2) - (y * cellSize.Y));
-
-                Node2D wall = mazeCellRep.GetNode<Node2D>(mazeCellRep.GetMeta("wall_west").As<NodePath>());
-                if ((this.maze[y][x] & MazeCell.WesternWall) != MazeCell.WesternWall) wall.QueueFree();
-
-                wall = mazeCellRep.GetNode<Node2D>(mazeCellRep.GetMeta("wall_north").As<NodePath>());
-                if ((this.maze[y][x] & MazeCell.NorthernWall) != MazeCell.NorthernWall) wall.QueueFree();
-
-                wall = mazeCellRep.GetNode<Node2D>(mazeCellRep.GetMeta("wall_east").As<NodePath>());
-                if ((this.maze[y][x] & MazeCell.EasternWall) != MazeCell.EasternWall) wall.QueueFree();
-
-                wall = mazeCellRep.GetNode<Node2D>(mazeCellRep.GetMeta("wall_south").As<NodePath>());
-                if ((this.maze[y][x] & MazeCell.SouthernWall) != MazeCell.SouthernWall) wall.QueueFree();
-
-                mazeCellReps.Add(mazeCellRep);
-                this.mazeRepRoot.CallDeferred(Node.MethodName.AddChild, mazeCellRep);
-            }
-        }
-
-        this.btnGenerateMaze.Disabled = false;
+            this.btnGenerateMaze.Disabled = false;
+            this.maze = maze;
+        };
     }
 
     private void OnClearPathBtn_Clicked()
@@ -136,12 +140,12 @@ public partial class AppManager : Node
         var tempCell = this.mazeCellRep.Instantiate();
         var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
         var floorColor = tempCell.GetMeta("color_floor_default").As<Color>();
-        tempCell.CallDeferred(Node.MethodName.QueueFree);
+        tempCell.Free();
 
         foreach (var coords in this.path)
         {
             var position = new Vector2((this.maze[coords.y].Length * cellSize.X / -2) + (coords.x * cellSize.X), (cellSize.Y * this.maze.Length / 2) - (coords.y * cellSize.Y));
-            var cell = this.mazeCellReps.AsQueryable().Where(c => c.GlobalPosition == position).First();
+            var cell = this.mazeRepRoot.GetChildren().AsEnumerable().Where(n => n is Node2D c && c.GlobalPosition == position).First();
             cell.GetNode<Polygon2D>(cell.GetMeta("floor").As<NodePath>()).Color = floorColor;
         }
 
@@ -175,12 +179,12 @@ public partial class AppManager : Node
         var tempCell = this.mazeCellRep.Instantiate();
         var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
         var pathColor = tempCell.GetMeta("color_floor_path").As<Color>();
-        tempCell.CallDeferred(Node.MethodName.QueueFree);
+        tempCell.Free();
 
         foreach (var coords in this.path)
         {
             var position = new Vector2((this.maze[coords.y].Length * cellSize.X / -2) + (coords.x * cellSize.X), (cellSize.Y * this.maze.Length / 2) - (coords.y * cellSize.Y));
-            var cell = this.mazeCellReps.AsQueryable().Where(c => c.GlobalPosition == position).First();
+            var cell = this.mazeRepRoot.GetChildren().AsEnumerable().Where(n => n is Node2D c && c.GlobalPosition == position).First();
             cell.GetNode<Polygon2D>(cell.GetMeta("floor").As<NodePath>()).Color = pathColor;
         }
     }
