@@ -166,10 +166,12 @@ public static partial class Wilsons_Algorithm
         selCell = new(random.Next(0, width), 0);
         maze[selCell.y][selCell.x].value &= ~MazeCell.SouthernWall;
         output.lastSelCellCoords = selCell;
+        output.wasSelCellAdded = true;
 
         selCell = new(random.Next(0, width), height - 1);
         maze[selCell.y][selCell.x].value &= ~MazeCell.NorthernWall;
         output.lastNeighborCoords = selCell;
+        output.wasNeighborCellAdded = true;
         yield return output;
     }
 }

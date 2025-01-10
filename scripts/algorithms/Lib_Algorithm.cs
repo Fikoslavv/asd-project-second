@@ -55,9 +55,9 @@ public static partial class Lib_Algorithm
     {
         internal MazeCellRep[][] maze;
         internal MazeCellCoords lastSelCellCoords;
-        internal bool wasSelCellAdded;
+        internal bool? wasSelCellAdded;
         internal MazeCellCoords lastNeighborCoords;
-        internal bool wasNeighborCellAdded;
+        internal bool? wasNeighborCellAdded;
     }
 
     internal static void FetchNeighbors(MazeCellCoords[] neighbors, MazeCellCoords selCell, int width, int height)

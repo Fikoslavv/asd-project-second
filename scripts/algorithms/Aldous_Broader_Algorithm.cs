@@ -52,13 +52,20 @@ public static partial class Aldous_Broder_Algorithm
 
             var querry = neighbors.AsEnumerable().Where(c => c.isValid());
             var neighbor = querry.ElementAt(random.Next(0, querry.Count()));
+            output.lastSelCellCoords = selCell;
+
             if (!maze[neighbor.y][neighbor.x].visited)
             {
                 MergeCells(maze, selCell, neighbor);
-                output.lastSelCellCoords = selCell;
                 output.lastNeighborCoords = neighbor;
-                yield return output;
+                output.wasNeighborCellAdded = true;
             }
+            else
+            {
+                output.wasNeighborCellAdded = null;
+            }
+
+            yield return output;
 
             selCell = neighbor;
             maze[selCell.y][selCell.x].visited = true;
@@ -67,10 +74,12 @@ public static partial class Aldous_Broder_Algorithm
         selCell = new(random.Next(0, width), 0);
         maze[selCell.y][selCell.x].value &= ~MazeCell.SouthernWall;
         output.lastSelCellCoords = selCell;
+        output.wasSelCellAdded = true;
 
         selCell = new(random.Next(0, width), height - 1);
         maze[selCell.y][selCell.x].value &= ~MazeCell.NorthernWall;
         output.lastNeighborCoords = selCell;
+        output.wasNeighborCellAdded = true;
 
         yield return output;
     }
