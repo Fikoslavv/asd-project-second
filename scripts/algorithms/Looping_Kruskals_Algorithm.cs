@@ -25,6 +25,7 @@ public static partial class Kruskals_Algorithm
         }
 
         MazeCellCoords neighbor;
+        MazeCellCoords lastSelCell = null;
         var neighbors = new MazeCellCoords[4];
         while (maze.AsParallel().Select(row => row.AsEnumerable().Where(cell => !cell.visited).Any()).Where(row => row).Any())
         {
@@ -32,7 +33,7 @@ public static partial class Kruskals_Algorithm
             FetchNeighbors(neighbors, selCell, width, height);
 
             {
-                var querry = neighbors.AsEnumerable().Where(n => n.isValid());
+                var querry = neighbors.AsEnumerable().Where(n => n.isValid() && n != lastSelCell);
                 neighbor = querry.ElementAt(random.Next(0, querry.Count()));
             }
 
@@ -45,6 +46,7 @@ public static partial class Kruskals_Algorithm
                 path.Clear();
                 
                 path.Add(GetFirstUnvisitedCell(maze));
+                lastSelCell = null;
             }
             else if (path.Contains(neighbor))
             {
@@ -53,8 +55,13 @@ public static partial class Kruskals_Algorithm
 
                 path.Clear();
                 path.Add(GetFirstUnvisitedCell(maze));
+                lastSelCell = null;
             }
-            else path.Add(neighbor);
+            else
+            {
+                lastSelCell = selCell;
+                path.Add(neighbor);
+            }
         }
 
         while (trees.Count > 1)
@@ -111,6 +118,7 @@ public static partial class Kruskals_Algorithm
         yield return output;
 
         MazeCellCoords neighbor;
+        MazeCellCoords lastSelCell = null;
         var neighbors = new MazeCellCoords[4];
         while (maze.AsParallel().Select(row => row.AsEnumerable().Where(cell => !cell.visited).Any()).Where(row => row).Any())
         {
@@ -118,7 +126,7 @@ public static partial class Kruskals_Algorithm
             FetchNeighbors(neighbors, selCell, width, height);
 
             {
-                var querry = neighbors.AsEnumerable().Where(n => n.isValid());
+                var querry = neighbors.AsEnumerable().Where(n => n.isValid() && n != lastSelCell);
                 neighbor = querry.ElementAt(random.Next(0, querry.Count()));
             }
 
@@ -132,8 +140,9 @@ public static partial class Kruskals_Algorithm
                 foreach (var cell in path) maze[cell.y][cell.x].visited = true;
                 trees.Where(t => t.Contains(neighbor)).First().UnionWith(path);
                 path.Clear();
-                
+
                 path.Add(GetFirstUnvisitedCell(maze));
+                lastSelCell = null;
             }
             else if (path.Contains(neighbor))
             {
@@ -142,8 +151,13 @@ public static partial class Kruskals_Algorithm
 
                 path.Clear();
                 path.Add(GetFirstUnvisitedCell(maze));
+                lastSelCell = null;
             }
-            else path.Add(neighbor);
+            else
+            {
+                lastSelCell = selCell;
+                path.Add(neighbor);
+            }
         }
 
         while (trees.Count > 1)
