@@ -1,6 +1,15 @@
-[gd_scene format=3 uid="uid://d0yrhhs14jfmn"]
+[gd_scene load_steps=2 format=3 uid="uid://d0yrhhs14jfmn"]
 
-[node name="maze_cell" type="Node2D"]
+[ext_resource type="Script" path="res://scripts/MazeCellNode.cs" id="1_i148g"]
+
+[node name="maze_cell" type="Node2D" node_paths=PackedStringArray("floor", "westernWall", "northernWall", "easternWall", "southernWall")]
+script = ExtResource("1_i148g")
+floor = NodePath("Floor")
+westernWall = NodePath("WesternWall")
+northernWall = NodePath("NorthernWall")
+easternWall = NodePath("EasternWall")
+southernWall = NodePath("SouthernWall")
+cellSize = Vector2(50, 50)
 metadata/wall_west = NodePath("WesternWall")
 metadata/wall_north = NodePath("NorthernWall")
 metadata/wall_east = NodePath("EasternWall")

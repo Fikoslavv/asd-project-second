@@ -116,19 +116,15 @@ public partial class AppManager : Node
         }
         else if (algorithm.Contains("depth-first search")) generator = Depth_First_Search_Algorithm.GetMazeGenerator((int)sboxWidth.Value, (int)sboxHeight.Value, random);
 
-        foreach (var rep in this.mazeRepRoot.GetChildren()) rep.Free();
+        foreach (var rep in this.mazeRepRoot.GetChildren()) rep.QueueFree();
 
-        var tempCell = this.mazeCellRep.Instantiate();
-        var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
-        tempCell.Free();
-
-        var builder = new MazeBuilder() { MazeParent = this.mazeRepRoot, MazeGen = generator, MazeCellPrefab = this.mazeCellRep, MazeCellSize = cellSize, TimeThreshold = animationSpeed };
+        var builder = new MazeBuilder() { MazeParent = this.mazeRepRoot, MazeGen = generator, MazeCellPrefab = this.mazeCellRep, TimeThreshold = animationSpeed };
         var parent = this.GetParent();
         parent.CallDeferred(Node.MethodName.AddChild, builder);
 
         builder.OnBuildCompleted += (maze) =>
         {
-            this.btnGenerateMaze.Disabled = false;
+            this.btnGenerateMaze.CallDeferred(Button.MethodName.SetDisabled, false);
             this.maze = maze;
         };
     }
