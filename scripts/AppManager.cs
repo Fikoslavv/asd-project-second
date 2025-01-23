@@ -21,10 +21,12 @@ public partial class AppManager : Node
     private Button btnClearPath;
     private OptionButton obtnPathAlgorithm;
     private CheckButton cbtnEnableAnimatedMazeBuild;
-    private LineEdit txtBuildAnimationSpeed;
+    private LineEdit txtMazeBuildAnimationSpeed;
+    private CheckButton cbtnEnableAnimatedPathBuild;
+    private LineEdit txtPathBuildAnimationSpeed;
 
     private MazeCell[][] maze;
-    private Lib_Algorithm.MazeCellCoords[] path;
+    private ICollection<Lib_Algorithm.MazeCellCoords> path;
 
     public override void _Ready()
     {
@@ -45,14 +47,13 @@ public partial class AppManager : Node
         this.btnClearPath.Pressed += this.OnClearPathBtn_Clicked;
         this.obtnPathAlgorithm = this.generatorWindow.GetNode<OptionButton>(this.generatorWindow.GetMeta("obtn_path_algorithm").As<NodePath>());
         this.cbtnEnableAnimatedMazeBuild = this.generatorWindow.GetNode<CheckButton>(this.generatorWindow.GetMeta("cbtn_enable_animated_maze_build").As<NodePath>());
-        this.txtBuildAnimationSpeed = this.generatorWindow.GetNode<LineEdit>(this.generatorWindow.GetMeta("txt_build_animation_speed").As<NodePath>());
+        this.txtMazeBuildAnimationSpeed = this.generatorWindow.GetNode<LineEdit>(this.generatorWindow.GetMeta("txt_maze_build_animation_speed").As<NodePath>());
+        this.cbtnEnableAnimatedPathBuild = this.generatorWindow.GetNode<CheckButton>(this.generatorWindow.GetMeta("cbtn_enable_animated_path_build").As<NodePath>());
+        this.txtPathBuildAnimationSpeed = this.generatorWindow.GetNode<LineEdit>(this.generatorWindow.GetMeta("txt_path_build_animation_speed").As<NodePath>());
 
-        this.cbtnUseRandomSeed.Toggled += (state) =>
-        {
-            this.txtMazeSeed.Editable = !state;
-        };
-
-        this.cbtnEnableAnimatedMazeBuild.Toggled += (state) => this.txtBuildAnimationSpeed.Editable = !state;
+        this.cbtnUseRandomSeed.Toggled += (state) => this.txtMazeSeed.Editable = !state;
+        this.cbtnEnableAnimatedMazeBuild.Toggled += (state) => this.txtMazeBuildAnimationSpeed.Editable = !state;
+        this.cbtnEnableAnimatedPathBuild.Toggled += (state) => this.txtPathBuildAnimationSpeed.Editable = !state;
 
         if (this.mazeRepRoot == null)
         {
@@ -64,10 +65,10 @@ public partial class AppManager : Node
 
     private void OnGenerateMazeBtn_Clicked()
     {
+        this.path?.Clear();
         this.path = null;
         this.maze = null;
 
-        this.btnGenerateMaze.Disabled = true;
         Random random;
         if (this.cbtnUseRandomSeed.ButtonPressed)
         {
@@ -77,25 +78,19 @@ public partial class AppManager : Node
         }
         else
         {
-            if (!int.TryParse(this.txtMazeSeed.Text, out int seed))
-            {
-                this.btnGenerateMaze.Disabled = false;
-                return;
-            }
+            if (!int.TryParse(this.txtMazeSeed.Text, out int seed)) return;
             else random = new(seed);
         }
 
         double? animationSpeed = null;
         if (!this.cbtnEnableAnimatedMazeBuild.ButtonPressed)
         {
-            if (!int.TryParse(this.txtBuildAnimationSpeed.Text, out var animSpeed))
-            {
-                this.btnGenerateMaze.Disabled = false;
-                return;
-            }
+            if (!int.TryParse(this.txtMazeBuildAnimationSpeed.Text, out var animSpeed)) return;
 
             animationSpeed = animSpeed * 0.001;
         }
+
+        this.SetControlsDisabled(true);
 
         IEnumerator<Lib_Algorithm.MazeAnimatedGenData> generator = null;
         string algorithm = this.obtnMazeAlgorithm.Text.ToString().ToLower();
@@ -124,7 +119,7 @@ public partial class AppManager : Node
 
         builder.OnBuildCompleted += (maze) =>
         {
-            this.btnGenerateMaze.CallDeferred(Button.MethodName.SetDisabled, false);
+            this.SetControlsDisabledDeferred(false);
             this.maze = maze;
         };
     }
@@ -132,26 +127,31 @@ public partial class AppManager : Node
     private void OnClearPathBtn_Clicked()
     {
         if (this.maze is null || this.path is null) return;
-
-        var tempCell = this.mazeCellRep.Instantiate();
-        var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
-        var floorColor = tempCell.GetMeta("color_floor_default").As<Color>();
-        tempCell.Free();
-
-        foreach (var coords in this.path)
-        {
-            var position = new Vector2((this.maze[coords.y].Length * cellSize.X / -2) + (coords.x * cellSize.X), (cellSize.Y * this.maze.Length / 2) - (coords.y * cellSize.Y));
-            var cell = this.mazeRepRoot.GetChildren().AsEnumerable().Where(n => n is Node2D c && c.GlobalPosition == position).First();
-            cell.GetNode<Polygon2D>(cell.GetMeta("floor").As<NodePath>()).Color = floorColor;
-        }
-
+        this.path.Clear();
         this.path = null;
+
+        this.SetControlsDisabled(true);
+        var children = this.mazeRepRoot.GetChildren();
+        var task = System.Threading.Tasks.Task.Run(() => { foreach (MazeCellNode cell in children) cell.Floor.SetThreadSafe(Polygon2D.PropertyName.Color, cell.DefaultFloorColor); });
+        task.GetAwaiter().OnCompleted(() => this.SetControlsDisabledDeferred(false));
     }
 
     private void OnFindPathBtn_Clicked()
     {
         if (this.maze is null) return;
         if (this.path is not null) this.OnClearPathBtn_Clicked();
+
+        double? animationSpeed = null;
+        if (!this.cbtnEnableAnimatedPathBuild.ButtonPressed)
+        {
+            if (!int.TryParse(this.txtPathBuildAnimationSpeed.Text, out int value))
+            {
+                return;
+            }
+            else animationSpeed = value * 0.001;
+        }
+
+        this.SetControlsDisabled(true);
 
         Lib_Algorithm.MazeCellCoords from;
         Lib_Algorithm.MazeCellCoords to;
@@ -169,19 +169,31 @@ public partial class AppManager : Node
         }
 
         string algorithm = this.obtnPathAlgorithm.Text.ToLower();
+        IEnumerator<Lib_Algorithm.MazeAnimatedPathData> pathBuilder = null;
 
-        if (algorithm.Contains("dijkstra's")) this.path = Dijstras_Algorithm.FindPath(this.maze, from, to);
+        if (algorithm.Contains("dijkstra's")) pathBuilder = Dijstras_Algorithm.GetPathGenerator(this.maze, from, to);
 
-        var tempCell = this.mazeCellRep.Instantiate();
-        var cellSize = tempCell.GetMeta("cell_size").As<Vector2>();
-        var pathColor = tempCell.GetMeta("color_floor_path").As<Color>();
-        tempCell.Free();
+        var generator = new PathBuilder() { MazeParent = this.mazeRepRoot, PathGen = pathBuilder, TimeThreshold = animationSpeed, FromToCoords = new(from, to) };
+        this.GetParent().CallDeferred(Node.MethodName.AddChild, generator);
 
-        foreach (var coords in this.path)
+        generator.OnBuildCompleted += (path) =>
         {
-            var position = new Vector2((this.maze[coords.y].Length * cellSize.X / -2) + (coords.x * cellSize.X), (cellSize.Y * this.maze.Length / 2) - (coords.y * cellSize.Y));
-            var cell = this.mazeRepRoot.GetChildren().AsEnumerable().Where(n => n is Node2D c && c.GlobalPosition == position).First();
-            cell.GetNode<Polygon2D>(cell.GetMeta("floor").As<NodePath>()).Color = pathColor;
-        }
+            this.SetControlsDisabledDeferred(false);
+            this.path = path;
+        };
+    }
+
+    protected void SetControlsDisabled(bool value)
+    {
+        this.btnGenerateMaze.Disabled = value;
+        this.btnClearPath.Disabled = value;
+        this.btnFindPath.Disabled = value;
+    }
+
+    private void SetControlsDisabledDeferred(bool value)
+    {
+        this.btnGenerateMaze.SetDeferred(Button.PropertyName.Disabled, value);
+        this.btnClearPath.SetDeferred(Button.PropertyName.Disabled, value);
+        this.btnFindPath.SetDeferred(Button.PropertyName.Disabled, value);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using Godot;
 
 public static partial class Lib_Algorithm
@@ -58,6 +59,13 @@ public static partial class Lib_Algorithm
         internal bool? wasSelCellAdded;
         internal MazeCellCoords lastNeighborCoords;
         internal bool? wasNeighborCellAdded;
+    }
+
+    internal struct MazeAnimatedPathData
+    {
+        internal System.Collections.Generic.ICollection<MazeCellCoords> path;
+        internal MazeCellCoords lastSelCellCoords;
+        internal Vector2I mazeSize;
     }
 
     internal static void FetchNeighbors(MazeCellCoords[] neighbors, MazeCellCoords selCell, int width, int height)

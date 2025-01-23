@@ -48,6 +48,7 @@ public partial class MazeBuilder : Node
 
         if (this.TimeThreshold is null)
         {
+            this.mazeBuilder = (_) => { };
             this.asyncTask = System.Threading.Tasks.Task.Run(this.BuildMaze_Instant);
             this.asyncTask.GetAwaiter().OnCompleted(() => { lock (this.mazeBuilder) this.mazeBuilder = BuildMaze_Completed; });
         }
@@ -76,15 +77,16 @@ public partial class MazeBuilder : Node
     private void BuildMaze_Instant()
     {
         var mazeSize = new Vector2I(this.maze[0].Length, this.maze.Length);
-        int i = 0;
 
         while (this.MazeGen.MoveNext()) ;
-
-        foreach (MazeCellNode cell in this.mazeCellPool)
+        for (int y = 0; y < mazeSize.Y; y++)
         {
-            this.RefreshWallsInTheCell(cell, this.maze[i / mazeSize.Y][i % mazeSize.Y].value);
-            cell.SetThreadSafe(MazeCellNode.PropertyName.Visible, true);
-            i++;
+            for (int x = 0; x < mazeSize.X; x++)
+            {
+                var cell = this.mazeCellPool[mazeSize.X * y + x] as MazeCellNode;
+                this.RefreshWallsInTheCell(cell, this.maze[y][x].value);
+                cell.SetThreadSafe(Node2D.PropertyName.Visible, true);
+            }
         }
 
         this.mazeBuilder = this.BuildMaze_Completed;
